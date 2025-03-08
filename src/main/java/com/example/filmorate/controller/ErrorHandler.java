@@ -31,8 +31,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
-    public ErrorMessage filmAlreadyExists(RuntimeException e) {
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorMessage AlreadyExists(RuntimeException e) {
         return new ErrorMessage(e.getMessage());
     }
 

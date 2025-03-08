@@ -1,11 +1,15 @@
 package com.example.filmorate.storage.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
 public class Review {
-    private int id;
-    private String text;
+    private Integer id;
+    private Integer filmId;
+    private Integer userId;
+    private String review;
+    private Boolean isPositive;
+    private Integer rating;
+    private List<ReviewFeed> feedbacks;
+
+
 }
