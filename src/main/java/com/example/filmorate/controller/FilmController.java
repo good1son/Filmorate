@@ -2,12 +2,16 @@ package com.example.filmorate.controller;
 
 import com.example.filmorate.storage.model.Film;
 import com.example.filmorate.service.FilmService;
+import com.example.filmorate.storage.model.type.GENRE;
+import com.example.filmorate.storage.model.type.MPA;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,8 +31,28 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "3") int count) {
-        return filmService.getPopular(count);
+    public Collection<Film> getPopular(@RequestParam(required = false) Float minRating,
+                                       @RequestParam(required = false) Float maxRating,
+                                       @RequestParam(required = false) Integer yearA,
+                                       @RequestParam(required = false) Integer yearB,
+                                       @RequestParam(required = false) List<String> genre,
+                                       @RequestParam(required = false) List<String> mpa,
+                                       @RequestParam(required = false) Integer count,
+                                       @RequestParam(defaultValue = "desc") String sort) {
+        return filmService.getPopular(minRating, maxRating, yearA, yearB, genre, mpa, count, sort);
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> searchFilms(@RequestParam(required = false) Float minRating,
+                                       @RequestParam(required = false) Float maxRating,
+                                       @RequestParam(required = false) Integer yearA,
+                                       @RequestParam(required = false) Integer yearB,
+                                       @RequestParam(required = false) List<String> genre,
+                                       @RequestParam(required = false) List<String> mpa,
+                                       @RequestParam(required = false) Integer count,
+                                       @RequestParam(defaultValue = "name") String order,
+                                       @RequestParam(defaultValue = "asc") String sort) {
+        return filmService.searchFilms(minRating, maxRating, yearA, yearB, genre, mpa, count, order, sort);
     }
 
     @PostMapping("/add")
@@ -36,9 +60,21 @@ public class FilmController {
         filmService.addFilm(film);
     }
 
+    @PutMapping("{filmId}/rate/{userId}")
+    public void rateFIlm(@PathVariable Integer filmId, @PathVariable Integer userId,
+                         @RequestBody Map<String, Object> request) {
+        filmService.rateFilm(filmId, userId, (Integer) request.get("rating"));
+    }
+
     @PatchMapping("update/{id}")
     public void updateFilm(@PathVariable int id, @RequestBody Film film) {
         filmService.updateFilm(id, film);
+    }
+
+    @PatchMapping("{filmId}/rate/{userId}")
+    public void reRateFIlm(@PathVariable Integer filmId, @PathVariable Integer userId,
+                         @RequestBody Map<String, Object> request) {
+        filmService.reRateFilm(filmId, userId, (Integer) request.get("rating"));
     }
 
     @DeleteMapping("delete/{id}")
@@ -46,13 +82,8 @@ public class FilmController {
         filmService.deleteFilmById(id);
     }
 
-    /*
-    // если отправить кол-во большее, чем кол-во фильмов,
-    */
-
-
-
-    /*
-
-     */
+    @DeleteMapping("{filmId}/rate/{userId}")
+    public void deleteRate(@PathVariable Integer filmId, @PathVariable Integer userId) {
+        filmService.deleteRate(filmId, userId);
+    }
 }

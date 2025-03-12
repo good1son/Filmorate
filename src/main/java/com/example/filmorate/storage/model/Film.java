@@ -27,20 +27,17 @@ public class Film {
     private Set<GENRE> genres;
 
     @Min(1)
-    private int duration;
+    private Integer duration;
 
     @Min(0)
-    private int mpaId;
+    private Integer mpaId;
 
-    @JsonIgnore
-    private final Set<Integer> likesSet = new HashSet<>();
-
-    private int likes;
+    private Float rating;
 
     public Film() {};
 
     public Film(String name, String description, LocalDate releaseDate, Set<GENRE> genres,
-                int duration, int mpaId) {
+                Integer duration, Integer mpaId) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;

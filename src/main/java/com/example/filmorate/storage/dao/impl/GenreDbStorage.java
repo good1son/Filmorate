@@ -44,6 +44,12 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
+    public Integer getGenreId(GENRE genre) {
+        String sql = "SELECT id FROM genre_list WHERE genre = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt("id"), genre.toString());
+    }
+
+    @Override
     public void addGenre(int id, Collection<Integer> genreId) {
         for (Integer genre: genreId) {
             String sql = "INSERT INTO genres (film_id, genre_id) VALUES (?, ?)";

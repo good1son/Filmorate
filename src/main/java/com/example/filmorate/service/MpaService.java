@@ -21,6 +21,10 @@ public class MpaService {
                 .orElseThrow(() -> new NotFoundException("Рейтинг MPA с указанным ID не найден")));
     }
 
+    public Integer getMpaId(MPA mpa) {
+        return mpaDbStorage.getMpaId(mpa);
+    }
+
     public Map<Integer, MPA> getAllMpa() {
         List<MPA> mpaList = new ArrayList<>(mpaDbStorage.getAllMpa());
         return IntStream.range(0, mpaList.size())

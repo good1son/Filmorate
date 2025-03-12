@@ -35,6 +35,10 @@ public class GenreService {
         return genreDbStorage.getFilmGenres(id);
     }
 
+    public Integer getGenreId(GENRE genre) {
+        return genreDbStorage.getGenreId(genre);
+    }
+
     public void addGenre(int id, Set<GENRE> genre) {
         List<Integer> genreIdList = genre.stream().map(Enum::ordinal).toList();
         genreDbStorage.addGenre(id, genreIdList);

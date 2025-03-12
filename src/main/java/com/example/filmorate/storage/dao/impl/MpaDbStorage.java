@@ -29,6 +29,12 @@ public class MpaDbStorage implements MpaStorage {
     }
 
     @Override
+    public Integer getMpaId(MPA mpa) {
+        String sql = "SELECT id FROM mpa WHERE name = ?";
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> rs.getInt("id"), mpa.toString());
+    }
+
+    @Override
     public Collection<MPA> getAllMpa() {
         String sql = "SELECT * FROM mpa";
         return jdbcTemplate.query(sql, new MpaMapper());

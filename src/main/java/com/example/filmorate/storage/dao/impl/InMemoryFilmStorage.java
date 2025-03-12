@@ -2,6 +2,8 @@ package com.example.filmorate.storage.dao.impl;
 
 import com.example.filmorate.storage.dao.FilmStorage;
 import com.example.filmorate.storage.model.Film;
+import com.example.filmorate.storage.model.type.GENRE;
+import com.example.filmorate.storage.model.type.MPA;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -41,21 +43,24 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void putLike(int id) {
+    public void rateFilm(int filmId, int userId, int rating) {
 
     }
 
     @Override
-    public void removeLike(int id) {
+    public void reRateFilm(int filmId, int userId, int rating) {
 
     }
 
+    @Override
+    public void deleteRate(int filmId, int userId) {
+
+    }
 
     @Override
-    public Collection<Integer> getPopular(int count) {
+    public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB, List<Integer> genresId, List<Integer> mpaId, Integer count, String order, String sort) {
         return List.of();
     }
-
 
     @Override
     public void update(Film film) {

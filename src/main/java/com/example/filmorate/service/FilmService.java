@@ -4,17 +4,20 @@ import com.example.filmorate.exception.NotFoundException;
 import com.example.filmorate.storage.model.Film;
 import com.example.filmorate.storage.dao.impl.FilmDbStorage;
 import com.example.filmorate.storage.model.type.GENRE;
+import com.example.filmorate.storage.model.type.MPA;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService {
     private final FilmDbStorage filmDbStorage;
     private final GenreService genreService;
+    private final MpaService mpaService;
 
     public void addFilm(Film film) {
         filmDbStorage.add(film);
@@ -27,8 +30,7 @@ public class FilmService {
         if (film.isPresent()) {
             Set<GENRE> genres = new HashSet<>(genreService.getFilmGenres(id));
             film.get().setGenres(genres);
-        }
-        else throw  new NotFoundException("Фильм не найден");
+        } else throw new NotFoundException("Фильм не найден");
         return film;
 //        return Optional.of(filmDbStorage.get(id)
 //                .orElseThrow(() -> new NotFoundException("Фильм не найден")));
@@ -73,53 +75,53 @@ public class FilmService {
         filmDbStorage.delete(id);
     }
 
-    public void putLike(int id) {
-        filmDbStorage.putLike(id);
+    public void rateFilm(int filmId, int userId, int rating) {
+        filmDbStorage.rateFilm(filmId, userId, rating);
     }
 
-    public void removeLike(int id) {
-        filmDbStorage.removeLike(id);
+    public void reRateFilm(int filmId, int userId, int rating) {
+        filmDbStorage.reRateFilm(filmId, userId, rating);
     }
 
-    public Collection<Film> getPopular(int count) {
-        Collection<Integer> popularFilmsIdList = filmDbStorage.getPopular(count);
-// ДОБАВИТЬ ДРУЖБУ, ЧАТ И АЗЕР ФИЧЕРС
-        return popularFilmsIdList.stream()
-                .map(this::findFilmById)
-                .flatMap(Optional::stream)
-                .toList();
+    public void deleteRate(int filmId, int userId) {
+        filmDbStorage.deleteRate(filmId, userId);
     }
 
-    /*
-    public Film like(long id, long userId) {
-        get(id).getLikes().add(userId);
-        return get(id);
+    public Collection<Film> getPopular(Float minRating, Float maxRating, Integer yearA, Integer yearB,
+                                       List<String> genre, List<String> mpa, Integer count, String sort) {
+        return searchFilms(minRating, maxRating, yearA, yearB, genre, mpa, count, "rating", sort);
     }
 
-    public Film dislike(long id, long userId) {
-        get(id).getLikes().remove(userId);
-        return get(id);
+    public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB,
+                                       List<String> genre, List<String> mpa, Integer count, String order, String sort) {
+        List<Integer> mpaId = getMpaIdList(mpa);
+        List<Integer> genresId = getGenreIdList(genre);
+
+        Collection<Film> findFilms = filmDbStorage.searchFilms(minRating, maxRating, yearA, yearB,
+                genresId, mpaId, count, order, sort);
+
+        for (Film film : findFilms)
+            film.setGenres(new HashSet<>(genreService.getFilmGenres(film.getId())));
+        return findFilms;
     }
 
-    public List<Film> getPopular(int count) {
-        if (count - 1 > filmStorage.get().size())
-            count = filmStorage.get().size();
-
-        return filmStorage.get().values().stream()
-                .sorted(new LikeComparator())
-                .limit(count)
-                .toList();
+    private List<Integer> getMpaIdList(List<String> mpa) {
+        List<Integer> mpaId = new ArrayList<>();
+        if (mpa != null && !mpa.isEmpty())
+            return mpa.stream()
+                    .map(x -> MPA.valueOf(x.toUpperCase()))
+                    .map(mpaService::getMpaId)
+                    .toList();
+        return mpaId;
     }
 
-    public Film update(long id, Film film) {
-        if (!filmStorage.get().containsKey(id))
-            throw new FilmNotFound(String.format("Фильм с указанным ID: %d - не найден!", id));
-        film.setId(id);
-        return filmStorage.update(id, film);
+    private List<Integer> getGenreIdList(List<String> genre) {
+        List<Integer> genresId = new ArrayList<>();
+        if (genre != null && !genre.isEmpty())
+            genresId = genre.stream()
+                    .map(x -> GENRE.valueOf(x.toUpperCase()))
+                    .map(genreService::getGenreId)
+                    .toList();
+        return genresId;
     }
-
-    public List<Film> show() {
-        return filmStorage.get().values().stream().toList();
-    }*/
-
 }
