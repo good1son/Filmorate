@@ -1,6 +1,8 @@
 package com.example.filmorate.controller;
 
+import com.example.filmorate.service.ReviewFeedService;
 import com.example.filmorate.service.ReviewService;
+import com.example.filmorate.storage.model.Review;
 import com.example.filmorate.storage.model.ReviewFeed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +14,33 @@ import java.util.Map;
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ReviewController {
+public class ReviewFeedController {
     private final ReviewService reviewService;
+    private final ReviewFeedService reviewFeedService;
 
-    @GetMapping("/films/{id}/reviews")
-    public Collection<ReviewFeed> getFilmReviews(@PathVariable int id) {
+    @GetMapping()
+    public Collection<Review> getAllReviews() {
+        return reviewService.getAllReviews();
+    }
+
+    @GetMapping("/feedbacks")
+    public Collection<ReviewFeed> getAllReviewFeed() {
+        return reviewFeedService.getAllReviewFeed();
+    }
+
+    @GetMapping("/films/{id}")
+    public Collection<Review> getFilmReviews(@PathVariable int id) {
         return reviewService.getFilmReviews(id);
     }
 
-    @GetMapping("/users/{id}/reviews")
-    public Collection<ReviewFeed> getUserReviews(@PathVariable int id) {
+    @GetMapping("/users/{id}")
+    public Collection<Review> getUserReviews(@PathVariable int id) {
         return reviewService.getUserReviews(id);
+    }
+
+    @GetMapping("/feedbacks/users/{id}")
+    public Collection<ReviewFeed> getUserReviewFeed(@PathVariable int id) {
+        return reviewFeedService.getUserReviewFeed(id);
     }
 
     @PostMapping("/{filmId}/review/{userId}")
@@ -32,17 +50,17 @@ public class ReviewController {
 
     @PostMapping("{reviewId}/feedback/{userId}")
     public void addReviewFeed(@PathVariable int reviewId, @PathVariable int userId, @RequestBody Map<String, Object> request) {
-        reviewService.addReviewFeed(reviewId, userId, (Boolean) request.get("isHelpful"));
+        reviewFeedService.addReviewFeed(reviewId, userId, (Boolean) request.get("isHelpful"));
     }
 
-    @PutMapping("/{filmId}/review/{userId}")
+    @PatchMapping("/{filmId}/review/{userId}")
     public void editReview(@PathVariable int filmId, @PathVariable int userId, @RequestBody Map<String, Object> request) {
         reviewService.editReview(filmId, userId, (String) request.get("text"), (Boolean) request.get("isPositive"));
     }
 
-    @PutMapping("{reviewId}/feedback/{userId}")
+    @PatchMapping("{reviewId}/feedback/{userId}")
     public void editReviewFeed(@PathVariable int reviewId, @PathVariable int userId, @RequestBody Map<String, Object> request) {
-        reviewService.editReviewFeed(reviewId, userId, (Boolean) request.get("isHelpful"));
+        reviewFeedService.editReviewFeed(reviewId, userId, (Boolean) request.get("isHelpful"));
     }
 
     @DeleteMapping("/{filmId}/review/{userId}")
@@ -52,6 +70,6 @@ public class ReviewController {
 
     @DeleteMapping("{reviewId}/feedback/{userId}")
     public void deleteReviewFeed(@PathVariable int reviewId, @PathVariable int userId) {
-        reviewService.deleteReviewFeed(reviewId, userId);
+        reviewFeedService.deleteReviewFeed(reviewId, userId);
     }
 }

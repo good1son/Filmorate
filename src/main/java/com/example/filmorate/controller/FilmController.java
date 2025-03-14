@@ -1,9 +1,8 @@
 package com.example.filmorate.controller;
 
+import com.example.filmorate.service.RateService;
 import com.example.filmorate.storage.model.Film;
 import com.example.filmorate.service.FilmService;
-import com.example.filmorate.storage.model.type.GENRE;
-import com.example.filmorate.storage.model.type.MPA;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,10 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmController {
     private final FilmService filmService;
+    private final RateService rateService;
 
     @GetMapping("/{id}")
-    public Optional<Film> getFilm(@PathVariable int id) {
+    public Film getFilm(@PathVariable int id) {
         return filmService.findFilmById(id);
     }
 
@@ -35,11 +35,12 @@ public class FilmController {
                                        @RequestParam(required = false) Float maxRating,
                                        @RequestParam(required = false) Integer yearA,
                                        @RequestParam(required = false) Integer yearB,
+                                       @RequestParam(required = false) List<String> directors,
                                        @RequestParam(required = false) List<String> genre,
                                        @RequestParam(required = false) List<String> mpa,
                                        @RequestParam(required = false) Integer count,
                                        @RequestParam(defaultValue = "desc") String sort) {
-        return filmService.getPopular(minRating, maxRating, yearA, yearB, genre, mpa, count, sort);
+        return filmService.getPopular(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, sort);
     }
 
     @GetMapping("/search")
@@ -47,12 +48,13 @@ public class FilmController {
                                        @RequestParam(required = false) Float maxRating,
                                        @RequestParam(required = false) Integer yearA,
                                        @RequestParam(required = false) Integer yearB,
+                                        @RequestParam(required = false) List<String> directors,
                                        @RequestParam(required = false) List<String> genre,
                                        @RequestParam(required = false) List<String> mpa,
                                        @RequestParam(required = false) Integer count,
                                        @RequestParam(defaultValue = "name") String order,
                                        @RequestParam(defaultValue = "asc") String sort) {
-        return filmService.searchFilms(minRating, maxRating, yearA, yearB, genre, mpa, count, order, sort);
+        return filmService.searchFilms(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, order, sort);
     }
 
     @PostMapping("/add")
@@ -63,7 +65,7 @@ public class FilmController {
     @PutMapping("{filmId}/rate/{userId}")
     public void rateFIlm(@PathVariable Integer filmId, @PathVariable Integer userId,
                          @RequestBody Map<String, Object> request) {
-        filmService.rateFilm(filmId, userId, (Integer) request.get("rating"));
+        rateService.rateFilm(filmId, userId, (Integer) request.get("rating"));
     }
 
     @PatchMapping("update/{id}")
@@ -74,7 +76,7 @@ public class FilmController {
     @PatchMapping("{filmId}/rate/{userId}")
     public void reRateFIlm(@PathVariable Integer filmId, @PathVariable Integer userId,
                          @RequestBody Map<String, Object> request) {
-        filmService.reRateFilm(filmId, userId, (Integer) request.get("rating"));
+        rateService.reRateFilm(filmId, userId, (Integer) request.get("rating"));
     }
 
     @DeleteMapping("delete/{id}")
@@ -84,6 +86,6 @@ public class FilmController {
 
     @DeleteMapping("{filmId}/rate/{userId}")
     public void deleteRate(@PathVariable Integer filmId, @PathVariable Integer userId) {
-        filmService.deleteRate(filmId, userId);
+        rateService.deleteRate(filmId, userId);
     }
 }

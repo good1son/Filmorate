@@ -21,6 +21,8 @@ public class Film {
     @NotNull @Size(min = 1, max = 200)
     private String description;
 
+    private Integer directorId;
+
     @FilmDate
     private LocalDate releaseDate;
 
@@ -36,10 +38,11 @@ public class Film {
 
     public Film() {};
 
-    public Film(String name, String description, LocalDate releaseDate, Set<GENRE> genres,
+    public Film(String name, String description, Integer directorId, LocalDate releaseDate, Set<GENRE> genres,
                 Integer duration, Integer mpaId) {
         this.name = name;
         this.description = description;
+        this.directorId = directorId;
         this.releaseDate = releaseDate;
         this.genres = genres;
         this.duration = duration;

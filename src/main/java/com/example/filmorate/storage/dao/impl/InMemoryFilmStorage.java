@@ -28,8 +28,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> get(int id) {
-        return Optional.empty();
+    public Film get(int id) {
+        return new Film();
     }
 
     @Override
@@ -43,22 +43,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void rateFilm(int filmId, int userId, int rating) {
-
-    }
-
-    @Override
-    public void reRateFilm(int filmId, int userId, int rating) {
-
-    }
-
-    @Override
-    public void deleteRate(int filmId, int userId) {
-
-    }
-
-    @Override
-    public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB, List<Integer> genresId, List<Integer> mpaId, Integer count, String order, String sort) {
+    public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB,
+                                        List<String> directors, List<Integer> genresId, List<Integer> mpaId,
+                                        Integer count, String order, String sort) {
         return List.of();
     }
 

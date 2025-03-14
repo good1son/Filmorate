@@ -14,7 +14,5 @@ public class Review {
     private Boolean isPositive;
     private Integer rating;
     private LocalDateTime createdAt;
-    private List<ReviewFeed> feedbacks;
-
-
+    //private List<ReviewFeed> feedbacks;
 }

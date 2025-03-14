@@ -41,14 +41,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> get(int id) {
+    public Film get(int id) {
         String sql = "SELECT * FROM films WHERE id = ?";
-        try {
-            Film film = jdbcTemplate.queryForObject(sql, new FilmMapper(), id);
-            return Optional.ofNullable(film);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(sql, new FilmMapper(), id);
     }
 
     @Override
@@ -71,37 +66,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void rateFilm(int filmId, int userId, int rating) {
-        try {
-            String sql = "INSERT INTO film_ratings (film_id, user_id, rating) VALUES (?, ?, ?)";
-            jdbcTemplate.update(sql, filmId, userId, rating);
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistsException("Вы уже оставляли оценку данному фильму");
-        }
-        updateFilmRating(filmId);
-    }
-
-    @Override
-    public void reRateFilm(int filmId, int userId, int rating) {
-        String sql = "UPDATE film_ratings SET rating = ? WHERE film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sql, rating, filmId, userId);
-        updateFilmRating(filmId);
-    }
-
-    @Override
-    public void deleteRate(int filmId, int userId) {
-        String sql = "DELETE FROM film_ratings WHERE film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sql, filmId, userId);
-        updateFilmRating(filmId);
-    }
-
-    @Override
     public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB,
-                                        List<Integer> genresId, List<Integer> mpaId, Integer count,
-                                        String order, String sort) {
+                                        List<String> directors, List<Integer> genresId, List<Integer> mpaId,
+                                        Integer count, String order, String sort) {
         String sql = "SELECT * FROM films WHERE id IS NOT NULL" +
-                createSearchingSql(minRating, maxRating, yearA, yearB, genresId, mpaId, count, order, sort);
-        Object[] params = getSqlParam(minRating, maxRating, yearA, yearB, genresId, mpaId, count);
+                createSearchingSql(minRating, maxRating, yearA, yearB, directors, genresId, mpaId, count, order, sort);
+        Object[] params = getSqlParam(minRating, maxRating, yearA, yearB, directors, genresId, mpaId, count);
         return jdbcTemplate.query(sql, new FilmMapper(), params);
     }
 
@@ -119,19 +89,29 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sql, id);
     }
 
-    private void updateFilmRating(int filmId) {
+    public boolean filmExists(Integer id) {
+        String sql = "SELECT COUNT(id) FROM films WHERE id = ? LIMIT 1";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
+
+    public void updateFilmRating(int filmId) {
         String sql = "UPDATE films SET rating = " +
                 "(SELECT AVG(rating) FROM film_ratings WHERE film_id = ?) " +
                 "WHERE id = ?";
         jdbcTemplate.update(sql, filmId, filmId);
     }
 
+
+
     private String createSearchingSql(Float minRating, Float maxRating, Integer yearA, Integer yearB,
-                                      List<Integer> genresId, List<Integer> mpaId, Integer count, String order,
-                                      String sort) {
+                                      List<String> directors, List<Integer> genresId, List<Integer> mpaId,
+                                      Integer count, String order, String sort) {
         StringBuilder sql = new StringBuilder();
         addSearchRating(minRating,maxRating, sql);
         addSearchYear(yearA, yearB, sql);
+        if (directors != null && !directors.isEmpty())
+            addSearchDirector(directors, sql);
         if (!genresId.isEmpty())
             addSearchGenre(genresId, sql);
         if (!mpaId.isEmpty())
@@ -140,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
         return sql.toString();
     }
 
-    private Object[] getSqlParam(Float minRating, Float maxRating, Integer yearA, Integer yearB,
+    private Object[] getSqlParam(Float minRating, Float maxRating, Integer yearA, Integer yearB, List<String> directors,
                                           List<Integer> genresId, List<Integer> mpaId, Integer count) {
         List<Object> params = new ArrayList<>();
         if (minRating != null)
@@ -151,6 +131,8 @@ public class FilmDbStorage implements FilmStorage {
             params.add(yearA);
         if (yearB != null)
             params.add(yearB);
+        if (directors != null && !directors.isEmpty())
+            params.addAll(directors);
         if (!genresId.isEmpty())
             params.addAll(genresId);
         if (!mpaId.isEmpty())
@@ -175,15 +157,21 @@ public class FilmDbStorage implements FilmStorage {
             sql.append(" AND YEAR(release_date) <= ?");
     }
 
+    private void addSearchDirector(List<String> directors, StringBuilder sql) {
+        sql.append(" AND director_id IN (SELECT id FROM directors WHERE (name = ?");
+        sql.append(" OR name = ?".repeat(directors.size() - 1));
+        sql.append("))");
+    }
+
     private void addSearchGenre(List<Integer> genresId, StringBuilder sql) {
         sql.append(" AND id IN (SELECT film_id FROM genres WHERE (genre_id = ?");
-        sql.append(" OR genre_id = ?".repeat(Math.max(0, genresId.size() - 1)));
+        sql.append(" OR genre_id = ?".repeat(genresId.size() - 1));
         sql.append("))");
     }
 
     private void addSearchMpa(List<Integer> mpaId, StringBuilder sql) {
         sql.append(" AND (mpa_id = ?");
-        sql.append(" OR mpa_id = ?".repeat(Math.max(0, mpaId.size() - 1)));
+        sql.append(" OR mpa_id = ?".repeat(mpaId.size() - 1));
         sql.append(")");
     }
 

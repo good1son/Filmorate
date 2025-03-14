@@ -25,15 +25,13 @@ public class FilmService {
         genreService.addGenre(id, film.getGenres());
     }
 
-    public Optional<Film> findFilmById(int id) {
-        Optional<Film> film = filmDbStorage.get(id);
-        if (film.isPresent()) {
-            Set<GENRE> genres = new HashSet<>(genreService.getFilmGenres(id));
-            film.get().setGenres(genres);
-        } else throw new NotFoundException("Фильм не найден");
+    public Film findFilmById(int id) {
+        if (!filmDbStorage.filmExists(id))
+            throw new NotFoundException("Фильм с указанным ID не найден");
+        Film film = filmDbStorage.get(id);
+        Set<GENRE> genres = new HashSet<>(genreService.getFilmGenres(id));
+        film.setGenres(genres);
         return film;
-//        return Optional.of(filmDbStorage.get(id)
-//                .orElseThrow(() -> new NotFoundException("Фильм не найден")));
     }
 
     private Optional<Integer> findFilmByName(String name) {
@@ -50,12 +48,11 @@ public class FilmService {
     public Collection<Film> getFilms(Collection<Integer> idList) {
         return idList.stream()
                 .map(this::findFilmById)
-                .flatMap(Optional::stream)
                 .toList();
     }
 
     public void updateFilm(int id, Film film) {
-        Film updatedFilm = findFilmById(id).get();
+        Film updatedFilm = findFilmById(id);
         if (film.getName() != null)
             updatedFilm.setName(film.getName());
         if (film.getDescription() != null)
@@ -75,29 +72,19 @@ public class FilmService {
         filmDbStorage.delete(id);
     }
 
-    public void rateFilm(int filmId, int userId, int rating) {
-        filmDbStorage.rateFilm(filmId, userId, rating);
-    }
-
-    public void reRateFilm(int filmId, int userId, int rating) {
-        filmDbStorage.reRateFilm(filmId, userId, rating);
-    }
-
-    public void deleteRate(int filmId, int userId) {
-        filmDbStorage.deleteRate(filmId, userId);
-    }
-
     public Collection<Film> getPopular(Float minRating, Float maxRating, Integer yearA, Integer yearB,
-                                       List<String> genre, List<String> mpa, Integer count, String sort) {
-        return searchFilms(minRating, maxRating, yearA, yearB, genre, mpa, count, "rating", sort);
+                                       List<String> directors, List<String> genre, List<String> mpa,
+                                       Integer count, String sort) {
+        return searchFilms(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, "rating", sort);
     }
 
     public Collection<Film> searchFilms(Float minRating, Float maxRating, Integer yearA, Integer yearB,
-                                       List<String> genre, List<String> mpa, Integer count, String order, String sort) {
+                                        List<String> directors, List<String> genre, List<String> mpa,
+                                        Integer count, String order, String sort) {
         List<Integer> mpaId = getMpaIdList(mpa);
         List<Integer> genresId = getGenreIdList(genre);
 
-        Collection<Film> findFilms = filmDbStorage.searchFilms(minRating, maxRating, yearA, yearB,
+        Collection<Film> findFilms = filmDbStorage.searchFilms(minRating, maxRating, yearA, yearB, directors,
                 genresId, mpaId, count, order, sort);
 
         for (Film film : findFilms)
