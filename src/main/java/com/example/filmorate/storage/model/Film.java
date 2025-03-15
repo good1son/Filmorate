@@ -2,12 +2,10 @@ package com.example.filmorate.storage.model;
 
 import com.example.filmorate.annotation.FilmDate;
 import com.example.filmorate.storage.model.type.GENRE;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 

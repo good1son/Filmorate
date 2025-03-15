@@ -2,8 +2,6 @@
 package com.example.filmorate.storage.dao;
 
 import com.example.filmorate.storage.model.Film;
-import com.example.filmorate.storage.model.type.GENRE;
-import com.example.filmorate.storage.model.type.MPA;
 
 import javax.sql.DataSource;
 import java.util.Collection;

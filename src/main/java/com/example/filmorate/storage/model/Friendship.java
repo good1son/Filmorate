@@ -5,13 +5,12 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Review {
+public class Friendship {
     private Integer id;
-    private Integer filmId;
     private Integer userId;
-    private String review;
-    private Boolean isPositive;
-    private Integer rating;
+    private Integer otherUserId;
+    private Integer statusId;
+    private Integer lastActionUserId;
     private LocalDateTime createdAt;
-    //private List<ReviewFeed> feedbacks;
+    private LocalDateTime updatedAt;
 }

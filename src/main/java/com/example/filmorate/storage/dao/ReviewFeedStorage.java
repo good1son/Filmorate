@@ -1,7 +1,6 @@
 package com.example.filmorate.storage.dao;
 
 import com.example.filmorate.storage.model.ReviewFeed;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Collection;
 

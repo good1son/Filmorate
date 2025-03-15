@@ -4,7 +4,6 @@ import com.example.filmorate.exception.AlreadyExistsException;
 import com.example.filmorate.exception.NotFoundException;
 import com.example.filmorate.storage.dao.impl.ReviewDbStorage;
 import com.example.filmorate.storage.model.Review;
-import com.example.filmorate.storage.model.ReviewFeed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

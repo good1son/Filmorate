@@ -5,13 +5,11 @@ import com.example.filmorate.storage.model.User;
 import com.example.filmorate.storage.util.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -30,14 +28,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> get(int id) {
+    public User get(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";
-        try {
-            User user = jdbcTemplate.queryForObject(sql, new UserMapper(), id);
-            return Optional.ofNullable(user);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return jdbcTemplate.queryForObject(sql, new UserMapper(), id);
     }
 
     @Override
@@ -45,8 +38,6 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT * FROM users";
         return jdbcTemplate.query(sql, new UserMapper());
     }
-
-
 
     @Override
     public void update(User user) {
@@ -58,5 +49,11 @@ public class UserDbStorage implements UserStorage {
     public void delete(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public boolean userExists(Integer id) {
+        String sql = "SELECT COUNT(id) FROM users WHERE id = ? LIMIT 1";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
     }
 }

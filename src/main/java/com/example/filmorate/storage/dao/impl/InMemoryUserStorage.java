@@ -24,8 +24,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Optional<User> get(int id) {
-        return Optional.empty();
+    public User get(int id) {
+        return new User();
     }
 
     @Override

@@ -2,18 +2,14 @@ package com.example.filmorate.storage.dao.impl;
 
 import com.example.filmorate.storage.dao.DirectorStorage;
 import com.example.filmorate.storage.model.Director;
-import com.example.filmorate.storage.model.type.MPA;
 import com.example.filmorate.storage.util.DirectorMapper;
-import com.example.filmorate.storage.util.MpaMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Component

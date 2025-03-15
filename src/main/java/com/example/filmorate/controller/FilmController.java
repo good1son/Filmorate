@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
@@ -43,6 +42,8 @@ public class FilmController {
         return filmService.getPopular(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, sort);
     }
 
+
+
     @GetMapping("/search")
     public Collection<Film> searchFilms(@RequestParam(required = false) Float minRating,
                                        @RequestParam(required = false) Float maxRating,
@@ -56,6 +57,8 @@ public class FilmController {
                                        @RequestParam(defaultValue = "asc") String sort) {
         return filmService.searchFilms(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, order, sort);
     }
+
+    @GetMapping("/{id}/subscribers/common/{otherId}")
 
     @PostMapping("/add")
     public void addFilm(@Valid @RequestBody Film film) {

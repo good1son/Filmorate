@@ -1,6 +1,5 @@
 package com.example.filmorate.annotation;
 
-import com.example.filmorate.validator.FilmDateValidator;
 import com.example.filmorate.validator.LoginValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

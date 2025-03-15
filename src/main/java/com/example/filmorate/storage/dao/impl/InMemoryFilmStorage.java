@@ -2,8 +2,6 @@ package com.example.filmorate.storage.dao.impl;
 
 import com.example.filmorate.storage.dao.FilmStorage;
 import com.example.filmorate.storage.model.Film;
-import com.example.filmorate.storage.model.type.GENRE;
-import com.example.filmorate.storage.model.type.MPA;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;

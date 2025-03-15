@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -20,9 +19,10 @@ public class UserService {
         userDbStorage.add(user);
     }
 
-    public Optional<User> findUserById(int id) {
-        return Optional.of(userDbStorage.get(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден")));
+    public User findUserById(int id) {
+        if (!userDbStorage.userExists(id))
+            throw new NotFoundException("Фильм с указанным ID не найден");
+        return userDbStorage.get(id);
     }
 
     public Collection<User> getUsers() {
@@ -35,12 +35,11 @@ public class UserService {
     public Collection<User> getUsers(Collection<Integer> idList) {
         return idList.stream()
                 .map(this::findUserById)
-                .flatMap(Optional::stream)
                 .toList();
     }
 
     public void updateUser(int id, User user) {
-        User updatedUser = findUserById(id).get();
+        User updatedUser = findUserById(id);
         if (user.getEmail() != null)
             updatedUser.setEmail(user.getEmail());
         if (user.getLogin() != null)

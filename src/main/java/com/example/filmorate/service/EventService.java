@@ -4,7 +4,6 @@ import com.example.filmorate.storage.dao.impl.EventDbStorage;
 import com.example.filmorate.storage.model.Event;
 import com.example.filmorate.storage.model.type.ACTION;
 import com.example.filmorate.storage.model.type.TARGET;
-import com.example.filmorate.storage.util.EventMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
 package com.example.filmorate.storage.dao.impl;
 
-import com.example.filmorate.exception.AlreadyExistsException;
 import com.example.filmorate.storage.dao.ReviewFeedStorage;
 import com.example.filmorate.storage.model.ReviewFeed;
 import com.example.filmorate.storage.model.type.ACTION;
@@ -8,12 +7,10 @@ import com.example.filmorate.storage.model.type.TARGET;
 import com.example.filmorate.storage.util.ReviewFeedMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)

@@ -1,6 +1,5 @@
 package com.example.filmorate.storage.dao.impl;
 
-import com.example.filmorate.exception.AlreadyExistsException;
 import com.example.filmorate.storage.dao.FilmStorage;
 import com.example.filmorate.storage.model.Film;
 import com.example.filmorate.storage.util.FilmMapper;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
