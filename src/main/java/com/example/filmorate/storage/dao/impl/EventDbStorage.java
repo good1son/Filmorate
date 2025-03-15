@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -30,8 +32,15 @@ public class EventDbStorage implements EventStorage {
     }
 
     @Override
-    public Collection<Event> getUserEvents(Integer userId) {
+    public Collection<Event> getUserEvents(Integer id) {
         String sql = "SELECT * FROM events WHERE user_id = ? ORDER BY created_at DESC";
-        return jdbcTemplate.query(sql, new EventMapper(), userId);
+        return jdbcTemplate.query(sql, new EventMapper(), id);
+    }
+
+    @Override
+    public Collection<Event> getUsersEvents(Collection<Integer> usersId) {
+        String placeholders = String.join(",", Collections.nCopies(usersId.size(), "?"));
+        String sql = "SELECT * FROM events WHERE user_id IN (" + placeholders + ") ORDER BY created_at DESC";
+        return jdbcTemplate.query(sql, new EventMapper(), usersId.toArray());
     }
 }

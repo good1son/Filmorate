@@ -1,7 +1,10 @@
 package com.example.filmorate.storage.model.type;
 
 public enum ACTION {
-    FOLLOW,
+    FRIEND_REQUEST,
+    CANCEL_FRIEND_REQUEST,
+    ACCEPT_REQUEST,
+    DECLINE_REQUEST,
     RATING,
     REVIEW,
     REVIEW_FEED,
@@ -12,7 +15,7 @@ public enum ACTION {
     EDIT_REVIEW_FEED,
     EDIT_COMMENT,
 
-    UNFOLLOW,
+    BREAK_FRIENDSHIPS,
     DELETE_RATING,
     DELETE_REVIEW,
     DELETE_REVIEW_FEED,

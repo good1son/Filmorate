@@ -68,26 +68,4 @@ public class FriendshipService {
             throw new NotFoundException("Пользователи не являются друзьями");
         friendshipDbStorage.deleteFriendship(id);
     }
-
-//    public void sendRequest(Integer senderId, Integer receiverId) {
-//        if (friendshipDbStorage.isRequestExists(senderId, receiverId))
-//            throw new AlreadyExistsException("Запрос в друзья уже был отправлен");
-//        if (friendshipDbStorage.isAlreadyFriends(senderId, receiverId))
-//            throw new AlreadyExistsException("Пользователи уже являются друзьями");
-//        friendshipDbStorage.sendRequest(senderId, receiverId);
-//    }
-//
-//    public void acceptRequest(Integer senderId, Integer receiverId) {
-//        if (friendshipDbStorage.isAlreadyFriends(senderId, receiverId))
-//            throw new AlreadyExistsException("Пользователи уже являются друзьями");
-//        if (friendshipDbStorage.isRequestExists(senderId, receiverId))
-//            friendshipDbStorage.acceptRequest(senderId, receiverId);
-//        else throw new NotFoundException("Запрос в друзья не найден");
-//    }
-//
-//    public void declineRequest(Integer senderId, Integer receiverId) {
-//        if (friendshipDbStorage.isAlreadyFriends(senderId, receiverId))
-//            friendshipDbStorage.declineRequest(senderId, receiverId);
-//        else throw new NotFoundException("Пользователи не являются друзьями");
-//    }
 }

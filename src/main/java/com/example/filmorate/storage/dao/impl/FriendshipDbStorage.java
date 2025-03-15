@@ -2,6 +2,8 @@ package com.example.filmorate.storage.dao.impl;
 
 import com.example.filmorate.storage.dao.FriendshipStorage;
 import com.example.filmorate.storage.dto.UserDTO;
+import com.example.filmorate.storage.model.type.ACTION;
+import com.example.filmorate.storage.model.type.TARGET;
 import com.example.filmorate.storage.util.UserDTOMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,15 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FriendshipDbStorage implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final EventDbStorage eventDbStorage;
+
 
     @Override
     public void sendRequest(Integer senderId, Integer receiverId) {
         String sql = "INSERT INTO friendships (sender_id, receiver_id, status_id, last_action_user_id) " +
                 "VALUES (?, ?, 1, ?)";
         jdbcTemplate.update(sql, senderId, receiverId, senderId);
+        eventDbStorage.createEvent(senderId, ACTION.FRIEND_REQUEST, receiverId, TARGET.USER);
     }
 
     @Override
@@ -28,6 +33,8 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String sql = "UPDATE friendships SET status_id = 2, last_action_user_id = receiver_id, " +
                 "updated_at = CURRENT_TIMESTAMP WHERE id = ?";
         jdbcTemplate.update(sql, requestId);
+        eventDbStorage.createEvent(getReceiverIdByRequestId(requestId), ACTION.ACCEPT_REQUEST,
+                getSenderIdByRequestId(requestId), TARGET.USER);
     }
 
     @Override
@@ -35,11 +42,15 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String sql = "UPDATE friendships SET status_id = 3, last_action_user_id = receiver_id, " +
                 "updated_at = CURRENT_TIMESTAMP WHERE id = ?";
         jdbcTemplate.update(sql, requestId);
+        eventDbStorage.createEvent(getReceiverIdByRequestId(requestId), ACTION.DECLINE_REQUEST,
+                getSenderIdByRequestId(requestId), TARGET.USER);
     }
 
     @Override
     public void deleteRequest(Integer requestId) {
         String sql = "DELETE from friendships WHERE id = ?";
+        eventDbStorage.createEvent(getSenderIdByRequestId(requestId), ACTION.CANCEL_FRIEND_REQUEST,
+                getReceiverIdByRequestId(requestId), TARGET.USER);
         jdbcTemplate.update(sql, requestId);
     }
 
@@ -79,8 +90,20 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     @Override
+    public List<Integer> getFriendsIdList(Integer id) {
+        String sql = "SELECT u.id FROM friendships f JOIN users u ON " +
+                "(f.sender_id = u.id OR f.receiver_id = u.id) AND u.id != ? " +
+                "WHERE (f.sender_id = ? OR f.receiver_id = ?) AND f.status_id = 2";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("id"), id, id, id);
+    }
+
+    @Override
     public void deleteFriendship(Integer id) {
         String sql = "DELETE FROM friendships WHERE id = ?";
+        Integer senderId = getSenderIdByRequestId(id);
+        Integer receiverId = getReceiverIdByRequestId(id);
+        eventDbStorage.createEvent(senderId, ACTION.BREAK_FRIENDSHIPS, receiverId, TARGET.USER);
+        eventDbStorage.createEvent(receiverId, ACTION.BREAK_FRIENDSHIPS, senderId, TARGET.USER);
         jdbcTemplate.update(sql, id);
     }
 
@@ -116,5 +139,15 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String sql = "SELECT COUNT(id) FROM friendships WHERE id = ? AND status_id = 3 LIMIT 1";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, requestId);
         return count != null && count > 0;
+    }
+
+    private Integer getSenderIdByRequestId(Integer id) {
+        String sql = "SELECT sender_id FROM friendships WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id);
+    }
+
+    private Integer getReceiverIdByRequestId(Integer id) {
+        String sql = "SELECT receiver_id FROM friendships WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, id);
     }
 }

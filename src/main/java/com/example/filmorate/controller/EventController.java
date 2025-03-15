@@ -26,4 +26,9 @@ public class EventController {
     public Collection<Event> getUserEvents(@PathVariable int id) {
         return eventService.getUserEvents(id);
     }
+
+    @GetMapping("/users/{id}/feed")
+    public Collection<Event> getUserFeed(@PathVariable int id) {
+        return eventService.getUserFeed(id);
+    }
 }

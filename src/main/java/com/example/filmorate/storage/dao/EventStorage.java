@@ -9,5 +9,6 @@ import java.util.Collection;
 public interface EventStorage {
     public void createEvent(Integer userId, ACTION actionType, Integer targetId,TARGET targetType);
     public Collection<Event> getEventsFeed();
-    public Collection<Event> getUserEvents(Integer userId);
+    public Collection<Event> getUserEvents(Integer id);
+    public Collection<Event> getUsersEvents(Collection<Integer> usersId);
 }

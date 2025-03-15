@@ -35,23 +35,4 @@ public class ErrorHandler {
     public ErrorMessage AlreadyExists(RuntimeException e) {
         return new ErrorMessage(e.getMessage());
     }
-
-
-    /*@ExceptionHandler(FilmNotFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessage filmNotFound(RuntimeException e) {
-        return new ErrorMessage(e.getMessage());
-    }
-
-    @ExceptionHandler(UserNotFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessage userNotFound(RuntimeException e) {
-        return new ErrorMessage(e.getMessage());
-    }
-
-    @ExceptionHandler(GenreNotFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorMessage genreNotFound(RuntimeException e) {
-        return new ErrorMessage(e.getMessage());
-    }*/
 }

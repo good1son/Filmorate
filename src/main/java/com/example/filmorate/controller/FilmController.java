@@ -43,18 +43,17 @@ public class FilmController {
     }
 
 
-
     @GetMapping("/search")
     public Collection<Film> searchFilms(@RequestParam(required = false) Float minRating,
-                                       @RequestParam(required = false) Float maxRating,
-                                       @RequestParam(required = false) Integer yearA,
-                                       @RequestParam(required = false) Integer yearB,
+                                        @RequestParam(required = false) Float maxRating,
+                                        @RequestParam(required = false) Integer yearA,
+                                        @RequestParam(required = false) Integer yearB,
                                         @RequestParam(required = false) List<String> directors,
-                                       @RequestParam(required = false) List<String> genre,
-                                       @RequestParam(required = false) List<String> mpa,
-                                       @RequestParam(required = false) Integer count,
-                                       @RequestParam(defaultValue = "name") String order,
-                                       @RequestParam(defaultValue = "asc") String sort) {
+                                        @RequestParam(required = false) List<String> genre,
+                                        @RequestParam(required = false) List<String> mpa,
+                                        @RequestParam(required = false) Integer count,
+                                        @RequestParam(defaultValue = "name") String order,
+                                        @RequestParam(defaultValue = "asc") String sort) {
         return filmService.searchFilms(minRating, maxRating, yearA, yearB, directors, genre, mpa, count, order, sort);
     }
 
@@ -78,7 +77,7 @@ public class FilmController {
 
     @PatchMapping("{filmId}/rate/{userId}")
     public void reRateFIlm(@PathVariable Integer filmId, @PathVariable Integer userId,
-                         @RequestBody Map<String, Object> request) {
+                           @RequestBody Map<String, Object> request) {
         rateService.reRateFilm(filmId, userId, (Integer) request.get("rating"));
     }
 
